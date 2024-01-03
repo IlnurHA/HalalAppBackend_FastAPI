@@ -1,0 +1,5 @@
+fastapi == 0.54.1
+uvicorn[default] == 0.25.0
+sqlalchemy[asyncio] == 2.0.25
+pydantic_settings == 2.1.0
+aiosqlite == 0.19.0
