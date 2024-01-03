@@ -20,3 +20,12 @@ class FoodAdditives(BaseModel):
     description: Mapped[Text] = mapped_column(nullable=True)
     img_src: Mapped[Text] = mapped_column(nullable=True)
     source: Mapped[Text] = mapped_column(nullable=True)
+
+
+class IngredientsInfo(BaseModel):
+    __tablename__ = "ingredientsInfo"
+
+    name: Mapped[Text] = mapped_column()
+    permissiveness: Mapped[Enum[Permissiveness]] = mapped_column()
+    description: Mapped[Text] = mapped_column()
+    img_src: Mapped[Text] = mapped_column(nullable=True)
