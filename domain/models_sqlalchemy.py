@@ -13,7 +13,7 @@ class BaseModel(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
 
-class FoodAdditives(BaseModel):
+class FoodAdditive(BaseModel):
     __tablename__ = "foodAdditives"
 
     name: Mapped[Text] = mapped_column()
