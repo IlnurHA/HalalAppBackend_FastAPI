@@ -72,3 +72,6 @@ class FoodAdditivesRepository(BaseRepository):
         async with self.session_factory() as session:
             result = await session.delete(item)
             await session.commit()
+
+
+food_additive_repository = FoodAdditivesRepository(settings.db_url)

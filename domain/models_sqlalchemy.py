@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, Enum, Date
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Date
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
-from sqlalchemy.ext.declarative import declarative_base
 
 from typing import List
 
@@ -16,27 +15,27 @@ class BaseModel(DeclarativeBase):
 class FoodAdditive(BaseModel):
     __tablename__ = "foodAdditives"
 
-    name: Mapped[Text] = mapped_column()
-    permissiveness: Mapped[Enum[Permissiveness]] = mapped_column()
-    e_number: Mapped[Text] = mapped_column()
-    description: Mapped[Text] = mapped_column(nullable=True)
-    img_src: Mapped[Text] = mapped_column(nullable=True)
-    source: Mapped[Text] = mapped_column(nullable=True)
+    name: Mapped[str] = mapped_column()
+    permissiveness: Mapped[Permissiveness] = mapped_column(Enum(Permissiveness), nullable=False)
+    e_number: Mapped[str] = mapped_column()
+    description: Mapped[str] = mapped_column(nullable=True)
+    img_src: Mapped[str] = mapped_column(nullable=True)
+    source: Mapped[str] = mapped_column(nullable=True)
 
 
 class IngredientsInfo(BaseModel):
     __tablename__ = "ingredientsInfo"
 
-    name: Mapped[Text] = mapped_column()
-    permissiveness: Mapped[Enum[Permissiveness]] = mapped_column()
-    description: Mapped[Text] = mapped_column()
-    img_src: Mapped[Text] = mapped_column(nullable=True)
+    name: Mapped[str] = mapped_column()
+    permissiveness = mapped_column(Enum(Permissiveness), nullable=False)
+    description: Mapped[str] = mapped_column()
+    img_src: Mapped[str] = mapped_column(nullable=True)
 
 
 class FederationEntity(BaseModel):
     __tablename__ = "federationEntities"
 
-    name: Mapped[Text] = mapped_column()
+    name: Mapped[str] = mapped_column()
 
     districts: Mapped[List["DistrictEntity"]] = relationship(back_populates="federation_entity")
 
@@ -44,7 +43,7 @@ class FederationEntity(BaseModel):
 class DistrictEntity(BaseModel):
     __tablename__ = "districtEntities"
 
-    name: Mapped[Text] = mapped_column()
+    name: Mapped[str] = mapped_column()
     federation_entity_fk: Mapped[int] = mapped_column(ForeignKey("federationEntities.id", ondelete="CASCADE"))
 
     federation_entity: Mapped["FederationEntity"] = relationship(back_populates="districts")
@@ -54,7 +53,7 @@ class DistrictEntity(BaseModel):
 class DistrictSettlementEntity(BaseModel):
     __tablename__ = "districtSettlementEntities"
 
-    name: Mapped[Text] = mapped_column()
+    name: Mapped[str] = mapped_column()
     district_entity_fk: Mapped[int] = mapped_column(ForeignKey("districtEntities.id", ondelete="CASCADE"))
 
     district_entity: Mapped["DistrictEntity"] = relationship(back_populates="settlements")
@@ -65,15 +64,15 @@ class DistrictSettlementEntity(BaseModel):
 class FoodPoint(BaseModel):
     __tablename__ = "foodPoints"
 
-    name: Mapped[Text] = mapped_column()
+    name: Mapped[str] = mapped_column()
     is_prayer_room_exists: Mapped[bool] = mapped_column()
-    food_point_type: Mapped[Enum[FoodPointTypes]] = mapped_column()
-    cuisine_type: Mapped[Enum[CuisineTypes]] = mapped_column()
+    food_point_type = mapped_column(Enum(FoodPointTypes), nullable=False)
+    cuisine_type = mapped_column(Enum(CuisineTypes), nullable=False)
 
     district_settlement_fk: Mapped[int] = mapped_column(ForeignKey("districtSettlements.id", ondelete="CASCADE"))
-    street: Mapped[Text] = mapped_column()
-    building: Mapped[Text] = mapped_column()
-    halal_certificate_expiration_date: Mapped[Date] = mapped_column()
-    img_src: Mapped[Text] = mapped_column()
+    street: Mapped[str] = mapped_column()
+    building: Mapped[str] = mapped_column()
+    halal_certificate_expiration_date = mapped_column(Date, nullable=False)
+    img_src: Mapped[str] = mapped_column()
 
     district_settlement: Mapped["DistrictSettlementEntity"] = relationship(back_populates="food_points")
