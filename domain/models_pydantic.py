@@ -15,6 +15,7 @@ class FromSQLModel(ABC):
 
 
 class FoodAdditive(BaseModel, FromSQLModel):
+    food_additive_id: int = Field(..., alias="id", ge=0)
     name: str
     permissiveness: Permissiveness
     e_number: str
@@ -25,6 +26,7 @@ class FoodAdditive(BaseModel, FromSQLModel):
     @classmethod
     def fromSQLModel(cls, obj: sql_models.FoodAdditive):
         return cls(
+            id=obj.id,
             name=obj.name,
             permissiveness=obj.permissiveness,
             e_number=obj.e_number,
@@ -35,6 +37,7 @@ class FoodAdditive(BaseModel, FromSQLModel):
 
 
 class IngredientInfo(BaseModel, FromSQLModel):
+    ingredient_info_id: int = Field(..., alias="id", ge=0)
     name: str
     permissiveness: Permissiveness
     description: str
@@ -43,6 +46,7 @@ class IngredientInfo(BaseModel, FromSQLModel):
     @classmethod
     def fromSQLModel(cls, obj: sql_models.IngredientsInfo):
         return cls(
+            id=obj.id,
             name=obj.name,
             permissiveness=obj.permissiveness,
             description=obj.description,
