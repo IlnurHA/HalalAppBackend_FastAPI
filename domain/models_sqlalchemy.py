@@ -34,6 +34,7 @@ class FoodAdditive(BaseModel, FromPydanticModel):
     @classmethod
     def fromPydanticModel(cls, pydanticModel: model_pydantic.FoodAdditive):
         return cls(
+            id=pydanticModel.id,
             name=pydanticModel.name,
             permissiveness=pydanticModel.permissiveness,
             e_number=pydanticModel.e_number,
@@ -43,13 +44,23 @@ class FoodAdditive(BaseModel, FromPydanticModel):
         )
 
 
-class IngredientsInfo(BaseModel):
+class IngredientsInfo(BaseModel, FromPydanticModel):
     __tablename__ = "ingredientsInfo"
 
     name: Mapped[str] = mapped_column()
     permissiveness = mapped_column(Enum(Permissiveness), nullable=False)
     description: Mapped[str] = mapped_column()
     img_src: Mapped[str] = mapped_column(nullable=True)
+
+    @classmethod
+    def fromPydanticModel(cls, pydanticModel: model_pydantic.IngredientInfo):
+        return cls(
+            id=pydanticModel.id,
+            name=pydanticModel.name,
+            permissiveness=pydanticModel.permissiveness,
+            description=pydanticModel.description,
+            img_src=pydanticModel.img_src
+        )
 
 
 class FederationEntity(BaseModel):
