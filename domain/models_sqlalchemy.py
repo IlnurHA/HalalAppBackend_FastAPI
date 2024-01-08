@@ -1,9 +1,18 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Date
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 
-from typing import List
+from typing import List, Any
+from abc import ABC, abstractmethod
+import domain.models_pydantic as model_pydantic
 
 from domain.enums import Permissiveness, FoodPointTypes, CuisineTypes
+
+
+class FromPydanticModel(ABC):
+    @classmethod
+    @abstractmethod
+    def fromPydanticModel(cls, pydanticModel: Any) -> Any:
+        pass
 
 
 class BaseModel(DeclarativeBase):
@@ -12,7 +21,7 @@ class BaseModel(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
 
-class FoodAdditive(BaseModel):
+class FoodAdditive(BaseModel, FromPydanticModel):
     __tablename__ = "foodAdditives"
 
     name: Mapped[str] = mapped_column()
@@ -21,6 +30,17 @@ class FoodAdditive(BaseModel):
     description: Mapped[str] = mapped_column(nullable=True)
     img_src: Mapped[str] = mapped_column(nullable=True)
     source: Mapped[str] = mapped_column(nullable=True)
+
+    @classmethod
+    def fromPydanticModel(cls, pydanticModel: model_pydantic.FoodAdditive):
+        return cls(
+            name=pydanticModel.name,
+            permissiveness=pydanticModel.permissiveness,
+            e_number=pydanticModel.e_number,
+            description=pydanticModel.description,
+            img_src=pydanticModel.img_src,
+            source=pydanticModel.source
+        )
 
 
 class IngredientsInfo(BaseModel):
