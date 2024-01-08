@@ -32,3 +32,19 @@ class FoodAdditive(BaseModel, FromSQLModel):
             img_src=obj.img_src,
             source=obj.source
         )
+
+
+class IngredientInfo(BaseModel, FromSQLModel):
+    name: str
+    permissiveness: Permissiveness
+    description: str
+    img_src: AnyUrl | None = Field(None)
+
+    @classmethod
+    def fromSQLModel(cls, obj: sql_models.IngredientsInfo):
+        return cls(
+            name=obj.name,
+            permissiveness=obj.permissiveness,
+            description=obj.description,
+            img_src=obj.img_src
+        )
