@@ -1,9 +1,8 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Date
+from sqlalchemy import ForeignKey, Enum, Date
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import MetaData
 
-from typing import List, Any
-from abc import ABC, abstractmethod
+from typing import List
 
 from domain.enums import Permissiveness, FoodPointTypes, CuisineTypes
 
@@ -32,7 +31,7 @@ class IngredientsInfo(BaseModel):
 
     name: Mapped[str] = mapped_column()
     permissiveness = mapped_column(Enum(Permissiveness), nullable=False)
-    description: Mapped[str] = mapped_column()
+    description: Mapped[str] = mapped_column(nullable=True)
     img_src: Mapped[str] = mapped_column(nullable=True)
 
 

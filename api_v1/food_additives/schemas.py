@@ -19,4 +19,4 @@ class FoodAdditiveCreate(FoodAdditiveBase):
 
 
 class FoodAdditive(FoodAdditiveBase):
-    id: int = Field(..., ge=0)
+    id: int

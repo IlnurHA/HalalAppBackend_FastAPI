@@ -8,7 +8,7 @@ from adapters import repository_instance
 from . import crud
 from .schemas import FoodAdditive, FoodAdditiveCreate
 
-router = APIRouter(tags=['food_additives'])
+router = APIRouter(tags=['FoodAdditives'])
 
 
 @router.get("/", response_model=List[FoodAdditive])
