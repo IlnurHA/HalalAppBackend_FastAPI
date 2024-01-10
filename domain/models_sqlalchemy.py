@@ -15,10 +15,6 @@ class BaseModel(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
 
-class BaseForFoodPointSchema(DeclarativeBase):
-    __abstract__ = True
-
-
 class FoodAdditive(BaseModel):
     __tablename__ = "foodAdditives"
 
@@ -39,45 +35,43 @@ class IngredientsInfo(BaseModel):
     img_src: Mapped[str] = mapped_column(nullable=True)
 
 
-class FederationEntity(BaseForFoodPointSchema):
+class FederationEntity(BaseModel):
     __tablename__ = "federationEntities"
 
-    name: Mapped[str] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column()
 
 
-class DistrictEntity(BaseForFoodPointSchema):
+class DistrictEntity(BaseModel):
     __tablename__ = "districtEntities"
 
-    name: Mapped[str] = mapped_column(primary_key=True)
-    federation_name: Mapped[str] = mapped_column(ForeignKey("federationEntities.name", ondelete="CASCADE"))
+    name: Mapped[str] = mapped_column()
+    federation_fk: Mapped[int] = mapped_column(ForeignKey("federationEntities.id", ondelete="CASCADE"))
 
-    federation_entity: Mapped["FederationEntity"] = relationship()
+    federation_entity: Mapped["FederationEntity"] = relationship(lazy=False)
 
 
-class DistrictSettlementEntity(BaseForFoodPointSchema):
+class DistrictSettlementEntity(BaseModel):
     __tablename__ = "districtSettlementEntities"
 
-    name: Mapped[str] = mapped_column(primary_key=True)
-    district_name: Mapped[str] = mapped_column(ForeignKey("districtEntities.name", ondelete="CASCADE"))
+    name: Mapped[str] = mapped_column()
+    district_fk: Mapped[str] = mapped_column(ForeignKey("districtEntities.id", ondelete="CASCADE"))
 
-    district_entity: Mapped["DistrictEntity"] = relationship()
+    district_entity: Mapped["DistrictEntity"] = relationship(lazy=False)
 
 
-class FoodPoint(BaseForFoodPointSchema):
+class FoodPoint(BaseModel):
     __tablename__ = "foodPoints"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
 
     name: Mapped[str] = mapped_column()
     is_prayer_room_exists: Mapped[bool] = mapped_column()
     food_point_type = mapped_column(Enum(FoodPointTypes), nullable=False)
     cuisine_type = mapped_column(Enum(CuisineTypes), nullable=False)
 
-    district_settlement_name: Mapped[str] = mapped_column(
-        ForeignKey("districtSettlementEntities.name", ondelete="CASCADE"))
+    district_settlement_fk: Mapped[str] = mapped_column(
+        ForeignKey("districtSettlementEntities.id", ondelete="CASCADE"))
     street: Mapped[str] = mapped_column()
     building: Mapped[str] = mapped_column()
     halal_certificate_expiration_date = mapped_column(Date, nullable=False)
     img_src: Mapped[str] = mapped_column()
 
-    district_settlement: Mapped["DistrictSettlementEntity"] = relationship()
+    district_settlement: Mapped["DistrictSettlementEntity"] = relationship(lazy=False)
