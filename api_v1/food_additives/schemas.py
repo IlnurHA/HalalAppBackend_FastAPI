@@ -9,9 +9,9 @@ class FoodAdditiveBase(BaseModel):
     name: str
     permissiveness: Permissiveness
     e_number: str
-    description: str | None
-    img_src: AnyUrl | None
-    source: AnyUrl | None
+    description: str | None = None
+    img_src: AnyUrl | None = None
+    source: AnyUrl | None = None
 
 
 class FoodAdditiveCreate(FoodAdditiveBase):

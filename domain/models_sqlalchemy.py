@@ -1,18 +1,13 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Date
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import MetaData
 
 from typing import List, Any
 from abc import ABC, abstractmethod
-import domain.models_pydantic as model_pydantic
 
 from domain.enums import Permissiveness, FoodPointTypes, CuisineTypes
 
-
-class FromPydanticModel(ABC):
-    @classmethod
-    @abstractmethod
-    def fromPydanticModel(cls, pydanticModel: Any) -> Any:
-        pass
+metadata = MetaData()
 
 
 class BaseModel(DeclarativeBase):
@@ -21,7 +16,7 @@ class BaseModel(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
 
-class FoodAdditive(BaseModel, FromPydanticModel):
+class FoodAdditive(BaseModel):
     __tablename__ = "foodAdditives"
 
     name: Mapped[str] = mapped_column()
@@ -31,36 +26,14 @@ class FoodAdditive(BaseModel, FromPydanticModel):
     img_src: Mapped[str] = mapped_column(nullable=True)
     source: Mapped[str] = mapped_column(nullable=True)
 
-    @classmethod
-    def fromPydanticModel(cls, pydanticModel: model_pydantic.FoodAdditive):
-        return cls(
-            id=pydanticModel.id,
-            name=pydanticModel.name,
-            permissiveness=pydanticModel.permissiveness,
-            e_number=pydanticModel.e_number,
-            description=pydanticModel.description,
-            img_src=pydanticModel.img_src,
-            source=pydanticModel.source
-        )
 
-
-class IngredientsInfo(BaseModel, FromPydanticModel):
+class IngredientsInfo(BaseModel):
     __tablename__ = "ingredientsInfo"
 
     name: Mapped[str] = mapped_column()
     permissiveness = mapped_column(Enum(Permissiveness), nullable=False)
     description: Mapped[str] = mapped_column()
     img_src: Mapped[str] = mapped_column(nullable=True)
-
-    @classmethod
-    def fromPydanticModel(cls, pydanticModel: model_pydantic.IngredientInfo):
-        return cls(
-            id=pydanticModel.id,
-            name=pydanticModel.name,
-            permissiveness=pydanticModel.permissiveness,
-            description=pydanticModel.description,
-            img_src=pydanticModel.img_src
-        )
 
 
 class FederationEntity(BaseModel):
@@ -100,7 +73,7 @@ class FoodPoint(BaseModel):
     food_point_type = mapped_column(Enum(FoodPointTypes), nullable=False)
     cuisine_type = mapped_column(Enum(CuisineTypes), nullable=False)
 
-    district_settlement_fk: Mapped[int] = mapped_column(ForeignKey("districtSettlements.id", ondelete="CASCADE"))
+    district_settlement_fk: Mapped[int] = mapped_column(ForeignKey("districtSettlementEntities.id", ondelete="CASCADE"))
     street: Mapped[str] = mapped_column()
     building: Mapped[str] = mapped_column()
     halal_certificate_expiration_date = mapped_column(Date, nullable=False)

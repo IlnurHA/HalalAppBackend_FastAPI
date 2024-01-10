@@ -1,27 +1,18 @@
 from fastapi import FastAPI, Query
-from adapters.repository import food_additive_repository
-from domain.models_pydantic import FoodAdditive
-from service.tools import to_db_class
+from adapters.repository import repository_instance
+from domain.models_sqlalchemy import BaseModel, FoodAdditive as SQLFoodAdditive
+from config import settings
+from contextlib import asynccontextmanager
 
-app = FastAPI()
-
-
-@app.get("/api/v2/food_additives")
-def get_food_additives(limit: int = Query(100, ge=0), offset: int = Query(0, ge=0)):
-    return food_additive_repository.get_all(limit=limit, offset=offset)
+from api_v1 import router as api_v1_router
 
 
-@app.get("/api/v2/food_additives/{food_additive_id}")
-def get_food_additive(food_additive_id: int):
-    return food_additive_repository.get_by_id(food_additive_id)
+@asynccontextmanager
+async def fast_api_lifespan(_: FastAPI):
+    async with repository_instance.engine.begin() as connection:
+        await connection.run_sync(BaseModel.metadata.create_all)
+    yield
 
 
-# @app.post("/api/v2/food_additives")
-# def add_new_food_additive(food_additive: FoodAdditive):
-#     return food_additive_repository.add(to_db_class(food_additive))
-#
-#
-# @app.put("/api/v2/food_additives/{food_additive_id}")
-# def update_food_additive(food_additive_id: int, food_additive: FoodAdditive):
-#     food_additive.id = food_additive_id
-#     return food_additive_repository.update(to_db_class(food_additive))
+app = FastAPI(lifespan=fast_api_lifespan)
+app.include_router(api_v1_router, prefix="/api/v1")
