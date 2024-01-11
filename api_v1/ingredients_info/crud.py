@@ -3,7 +3,7 @@ from typing import List
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.engine import Result
-from sqlalchemy import select
+from sqlalchemy import select, delete
 
 from api_v1.ingredients_info.schemas import IngredientsInfoCreate
 from domain.models_sqlalchemy import IngredientsInfo
@@ -49,3 +49,16 @@ async def create_ingredient(session: AsyncSession, ingredients_info_create: Ingr
     await session.refresh(ingredients_info)
 
     return ingredients_info
+
+
+async def delete_ingredient(session: AsyncSession, ingredient_id: int):
+    statement = (delete(IngredientsInfo)
+                 .where(IngredientsInfo.id == ingredient_id)
+                 .returning(IngredientsInfo))
+    result = await session.execute(statement)
+
+    ingredient: IngredientsInfo | None = result.scalar_one_or_none()
+
+    await session.commit()
+
+    return ingredient

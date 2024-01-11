@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Body, Path
+from fastapi import APIRouter, Depends, Body, Path, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from adapters import repository_instance
@@ -28,3 +28,14 @@ async def create_ingredient(session: AsyncSession = Depends(repository_instance.
                             ingredient_create: IngredientsInfoCreate = Body(...),
                             user: User = Depends(get_current_active_user)) -> IngredientsInfo:
     return await crud.create_ingredient(session=session, ingredients_info_create=ingredient_create)
+
+
+@router.delete('/{ingredient_id}')
+async def delete_ingredient(session: AsyncSession = Depends(repository_instance.session_dependency),
+                            ingredient_id: int = Path(..., title="Ingredient"),
+                            user: User = Depends(get_current_active_user)):
+    result = await crud.delete_ingredient(session=session, ingredient_id=ingredient_id)
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Food additive with id {ingredient_id} not found")
+    return {"success": True}
