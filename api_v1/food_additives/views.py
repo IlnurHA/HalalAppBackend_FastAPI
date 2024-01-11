@@ -23,7 +23,7 @@ async def get_food_additives(session: AsyncSession = Depends(repository_instance
 @router.post("/", response_model=FoodAdditive)
 async def create_food_additive(session: AsyncSession = Depends(repository_instance.session_dependency),
                                food_additive: FoodAdditiveCreate = Body(...),
-                               user: User = Depends(get_current_active_user)):
+                               _: User = Depends(get_current_active_user)):
     return await crud.create_food_additive(session, food_additive)
 
 
@@ -41,7 +41,8 @@ async def get_food_additive(food_additive_id: int,
 
 @router.delete("/{food_additive_id}")
 async def delete_food_additive(food_additive_id: int,
-                               session: AsyncSession = Depends(repository_instance.session_dependency)):
+                               session: AsyncSession = Depends(repository_instance.session_dependency),
+                               _: User = Depends(get_current_active_user)):
     result = await crud.delete_food_additive(food_additive_id=food_additive_id, session=session)
 
     if not result:
@@ -54,7 +55,12 @@ async def delete_food_additive(food_additive_id: int,
 @router.patch("/{food_additive_id}")
 async def patch_food_additive(food_additive_id: int,
                               food_additive_patch: FoodAdditivesPatch,
-                              session: AsyncSession = Depends(repository_instance.session_dependency)):
+                              session: AsyncSession = Depends(repository_instance.session_dependency),
+                              _: User = Depends(get_current_active_user)):
+    if not food_additive_patch.model_dump(exclude_none=True):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Not a valid food additive")
+
     result = await crud.patch_food_additive(food_additive_id=food_additive_id,
                                             food_additive_patch=food_additive_patch,
                                             session=session)

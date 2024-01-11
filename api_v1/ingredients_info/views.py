@@ -26,14 +26,14 @@ async def get_ingredients_info_by_id(session: AsyncSession = Depends(repository_
 @router.post('/', response_model=IngredientsInfo)
 async def create_ingredient(session: AsyncSession = Depends(repository_instance.session_dependency),
                             ingredient_create: IngredientsInfoCreate = Body(...),
-                            user: User = Depends(get_current_active_user)) -> IngredientsInfo:
+                            _: User = Depends(get_current_active_user)) -> IngredientsInfo:
     return await crud.create_ingredient(session=session, ingredients_info_create=ingredient_create)
 
 
 @router.delete('/{ingredient_id}')
 async def delete_ingredient(session: AsyncSession = Depends(repository_instance.session_dependency),
                             ingredient_id: int = Path(..., title="Ingredient"),
-                            user: User = Depends(get_current_active_user)):
+                            _: User = Depends(get_current_active_user)):
     result = await crud.delete_ingredient(session=session, ingredient_id=ingredient_id)
     if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -45,7 +45,11 @@ async def delete_ingredient(session: AsyncSession = Depends(repository_instance.
 async def patch_ingredient(session: AsyncSession = Depends(repository_instance.session_dependency),
                            ingredient_id: int = Path(..., title="Ingredient to update"),
                            ingredient_info_patch: IngredientsInfoPatch = Body(...),
-                           user: User = Depends(get_current_active_user)):
+                           _: User = Depends(get_current_active_user)):
+    if not ingredient_info_patch.model_dump(exclude_none=True):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Not a valid ingredient info")
+
     result = await crud.patch_ingredient(session=session, ingredient_id=ingredient_id,
                                          ingredient_patch=ingredient_info_patch)
 

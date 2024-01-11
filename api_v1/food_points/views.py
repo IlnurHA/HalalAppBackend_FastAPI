@@ -33,14 +33,14 @@ async def get_food_point(session: AsyncSession = Depends(repository_instance.ses
 @router.post('/', response_model=FoodPoint)
 async def create_food_point(session: AsyncSession = Depends(repository_instance.session_dependency),
                             food_point_create: FoodPointCreate = Body(..., title="Food point create class"),
-                            user: User = Depends(get_current_active_user)):
+                            _: User = Depends(get_current_active_user)):
     return await crud.create_food_point(session=session, food_point=food_point_create)
 
 
 @router.delete('/{food_point_id}')
 async def delete_food_point(session: AsyncSession = Depends(repository_instance.session_dependency),
                             food_point_id: int = Path(..., title="Food point"),
-                            user: User = Depends(get_current_active_user)):
+                            _: User = Depends(get_current_active_user)):
     result = await crud.delete_food_point(session, food_point_id)
 
     if not result:
