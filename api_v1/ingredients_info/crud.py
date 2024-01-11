@@ -3,9 +3,9 @@ from typing import List
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.engine import Result
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, update
 
-from api_v1.ingredients_info.schemas import IngredientsInfoCreate
+from api_v1.ingredients_info.schemas import IngredientsInfoCreate, IngredientsInfoPatch
 from domain.models_sqlalchemy import IngredientsInfo
 from service.tools import update_url
 
@@ -60,5 +60,21 @@ async def delete_ingredient(session: AsyncSession, ingredient_id: int):
     ingredient: IngredientsInfo | None = result.scalar_one_or_none()
 
     await session.commit()
+
+    return ingredient
+
+
+async def patch_ingredient(session: AsyncSession, ingredient_id: int, ingredient_patch: IngredientsInfoPatch):
+    statement = (update(IngredientsInfo)
+                 .where(IngredientsInfo.id == ingredient_id)
+                 .values(**ingredient_patch.model_dump(exclude_none=True))
+                 .returning(IngredientsInfo))
+    result = await session.execute(statement)
+
+    ingredient: IngredientsInfo | None = result.scalar_one_or_none()
+
+    await session.commit()
+    if ingredient:
+        await session.refresh(ingredient)
 
     return ingredient

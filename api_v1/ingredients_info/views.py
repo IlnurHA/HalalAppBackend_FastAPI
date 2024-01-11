@@ -5,7 +5,7 @@ from adapters import repository_instance
 from domain.models_sqlalchemy import User
 
 from . import crud
-from .schemas import IngredientsInfo, IngredientsInfoCreate
+from .schemas import IngredientsInfo, IngredientsInfoCreate, IngredientsInfoPut, IngredientsInfoPatch
 from ..auth import get_current_active_user
 
 router = APIRouter(tags=['IngredientsInfo'])
@@ -38,4 +38,19 @@ async def delete_ingredient(session: AsyncSession = Depends(repository_instance.
     if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Food additive with id {ingredient_id} not found")
+    return {"success": True}
+
+
+@router.patch('/{ingredient_id}')
+async def patch_ingredient(session: AsyncSession = Depends(repository_instance.session_dependency),
+                           ingredient_id: int = Path(..., title="Ingredient to update"),
+                           ingredient_info_patch: IngredientsInfoPatch = Body(...),
+                           user: User = Depends(get_current_active_user)):
+    result = await crud.patch_ingredient(session=session, ingredient_id=ingredient_id,
+                                         ingredient_patch=ingredient_info_patch)
+
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Food additive with id {ingredient_id} not found")
+
     return {"success": True}

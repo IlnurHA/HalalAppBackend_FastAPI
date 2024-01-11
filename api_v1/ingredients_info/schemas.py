@@ -16,3 +16,14 @@ class IngredientsInfoCreate(IngredientsInfoBase):
 
 class IngredientsInfo(IngredientsInfoBase):
     id: int
+
+
+class IngredientsInfoPut(IngredientsInfoBase):
+    pass
+
+
+class IngredientsInfoPatch(BaseModel):
+    name: str | None = None
+    permissiveness: Permissiveness | None = None
+    description: str | None = None
+    img_src: AnyUrl | None = None
