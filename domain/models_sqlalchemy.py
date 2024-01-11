@@ -75,3 +75,11 @@ class FoodPoint(BaseModel):
     img_src: Mapped[str] = mapped_column()
 
     district_settlement: Mapped["DistrictSettlementEntity"] = relationship(lazy=False)
+
+
+class User(BaseModel):
+    __tablename__ = "users"
+
+    username: Mapped[str] = mapped_column(unique=True)
+    password: Mapped[str] = mapped_column(nullable=False)
+    disabled: Mapped[bool] = mapped_column(default=False, nullable=False)

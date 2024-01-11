@@ -7,6 +7,7 @@ from sqlalchemy import select
 
 from api_v1.ingredients_info.schemas import IngredientsInfoCreate
 from domain.models_sqlalchemy import IngredientsInfo
+from service.tools import update_url
 
 
 async def get_ingredients_info(
@@ -42,10 +43,9 @@ async def get_ingredients_info_by_id(session: AsyncSession, ingredient_id: int) 
 
 
 async def create_ingredient(session: AsyncSession, ingredients_info_create: IngredientsInfoCreate) -> IngredientsInfo:
-    ingredients_info: IngredientsInfo = IngredientsInfo(**ingredients_info_create.model_dump())
+    ingredients_info: IngredientsInfo = IngredientsInfo(**update_url(ingredients_info_create.model_dump()))
     session.add(ingredients_info)
     await session.commit()
     await session.refresh(ingredients_info)
 
     return ingredients_info
-

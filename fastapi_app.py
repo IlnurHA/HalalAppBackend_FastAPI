@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Query
+from fastapi.security import OAuth2PasswordBearer
+
 from adapters.repository import repository_instance
 from domain.models_sqlalchemy import BaseModel
 from config import settings
