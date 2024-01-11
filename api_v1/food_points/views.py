@@ -7,7 +7,7 @@ from adapters import repository_instance
 from domain.models_sqlalchemy import User
 
 from . import crud
-from .schemas import FoodPointCreate, FoodPoint
+from .schemas import FoodPointCreate, FoodPoint, FoodPointPatch
 from ..auth import get_current_active_user
 
 router = APIRouter(tags=['FoodPoints'])
@@ -46,4 +46,19 @@ async def delete_food_point(session: AsyncSession = Depends(repository_instance.
     if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Food point with id {food_point_id} not found")
+    return {"success": True}
+
+
+@router.patch('/{food_point_id}')
+async def patch_food_point(session: AsyncSession = Depends(repository_instance.session_dependency),
+                           food_point_id: int = Path(..., title="Food point to patch"),
+                           food_point_patch: FoodPointPatch = Body(..., title="Patched food point"),
+                           _: User = Depends(get_current_active_user)):
+    if not food_point_patch.model_dump(exclude_none=True):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Not a valid food point")
+
+    await crud.patch_food_point(session=session,
+                                food_point_id=food_point_id,
+                                food_point_patch=food_point_patch),
     return {"success": True}
