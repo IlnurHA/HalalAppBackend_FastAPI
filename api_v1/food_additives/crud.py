@@ -31,6 +31,13 @@ async def create_food_additive(session: AsyncSession, food_additive_create: Food
 
     return food_additive
 
-# async def delete_food_additive(session: AsyncSession, food_additive_id: int):
-#     statement = delete(FoodAdditive).where(FoodAdditive.id == food_additive_id)
-#     result: Result = await session.execute(statement)
+
+async def delete_food_additive(session: AsyncSession, food_additive_id: int):
+    statement = delete(FoodAdditive).where(FoodAdditive.id == food_additive_id).returning(FoodAdditive)
+    result: Result = await session.execute(statement)
+
+    food_additive: FoodAdditive | None = result.scalar_one_or_none()
+
+    await session.commit()
+
+    return food_additive

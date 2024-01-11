@@ -37,3 +37,15 @@ async def get_food_additive(food_additive_id: int,
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                         detail=f"Food additive with id {food_additive_id} not found")
+
+
+@router.delete("/{food_additive_id}")
+async def delete_food_additive(food_additive_id: int,
+                               session: AsyncSession = Depends(repository_instance.session_dependency)):
+    result = await crud.delete_food_additive(food_additive_id=food_additive_id, session=session)
+
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Food additive with id {food_additive_id} not found")
+
+    return {"success": True}
