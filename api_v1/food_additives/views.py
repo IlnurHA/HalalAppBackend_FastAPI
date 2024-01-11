@@ -7,7 +7,7 @@ from adapters import repository_instance
 from domain.models_sqlalchemy import User
 
 from . import crud
-from .schemas import FoodAdditive, FoodAdditiveCreate
+from .schemas import FoodAdditive, FoodAdditiveCreate, FoodAdditivesPatch
 
 from ..auth import get_current_active_user
 
@@ -44,6 +44,20 @@ async def delete_food_additive(food_additive_id: int,
                                session: AsyncSession = Depends(repository_instance.session_dependency)):
     result = await crud.delete_food_additive(food_additive_id=food_additive_id, session=session)
 
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Food additive with id {food_additive_id} not found")
+
+    return {"success": True}
+
+
+@router.patch("/{food_additive_id}")
+async def patch_food_additive(food_additive_id: int,
+                              food_additive_patch: FoodAdditivesPatch,
+                              session: AsyncSession = Depends(repository_instance.session_dependency)):
+    result = await crud.patch_food_additive(food_additive_id=food_additive_id,
+                                            food_additive_patch=food_additive_patch,
+                                            session=session)
     if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Food additive with id {food_additive_id} not found")

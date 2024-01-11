@@ -2,9 +2,9 @@ from typing import List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.engine import Result
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, update
 
-from api_v1.food_additives.schemas import FoodAdditiveCreate
+from api_v1.food_additives.schemas import FoodAdditiveCreate, FoodAdditivesPatch
 from domain.models_sqlalchemy import FoodAdditive
 from service.tools import update_url
 
@@ -39,5 +39,22 @@ async def delete_food_additive(session: AsyncSession, food_additive_id: int):
     food_additive: FoodAdditive | None = result.scalar_one_or_none()
 
     await session.commit()
+
+    return food_additive
+
+
+async def patch_food_additive(session: AsyncSession, food_additive_id: int,
+                              food_additive_patch: FoodAdditivesPatch):
+    statement = (update(FoodAdditive)
+                 .where(FoodAdditive.id == food_additive_id)
+                 .values(**food_additive_patch.model_dump(exclude_none=True))
+                 .returning(FoodAdditive))
+    result: Result = await session.execute(statement)
+
+    food_additive: FoodAdditive | None = result.scalar_one_or_none()
+
+    await session.commit()
+    if food_additive:
+        await session.refresh(food_additive)
 
     return food_additive
