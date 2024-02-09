@@ -1,0 +1,17 @@
+version: "1.0"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SECRET_KEY: $(openssl rand -hex 32)
+      DB_ECHO: false
+    ports:
+      - 1234:1234
+    expose:
+      - 1234
+
+
+
