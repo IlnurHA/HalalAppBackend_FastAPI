@@ -1,14 +1,14 @@
 FROM python:3.10-alpine
 LABEL authors="Ilnur"
 
+#EXPOSE 8000
+
 COPY ./requirements.txt /app/requirements.txt
 WORKDIR /app
+RUN mkdir db_local
 RUN pip install -r requirements.txt
 
 COPY . /app
 
-ENTRYPOINT ["uvicorn"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "1234"]
 
-CMD ["--port", "8000", "main:app"]
-
-EXPOSE 8000:8000
